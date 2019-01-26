@@ -1,6 +1,7 @@
 from time import sleep
-from os.path import dirname
+
 from configparser import ConfigParser
+from os.path import dirname
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -25,29 +26,26 @@ def login(url: str):
 
 
 def connections(con_filter: str):
+    invitations_sent = 0
     driver.get(con_filter)
-    total_number = int(driver.find_element_by_class_name("search-results__total").text.split()[1])
-    if total_number >= 1:
-        try:
-            result = driver.find_element_by_class_name("search-result__info")
-            remove_con(result.find_element_by_tag_name('a').get_attribute('href'))
+    if invitations_sent < 50:
+        driver.execute_script("window.scrollBy(0,250);")
+        container = driver.find_element_by_class_name('blended-srp-results-js')
+        buttons = container.find_elements_by_class_name('search-result__actions--primary')
+        for button in buttons:
+            if button.get_attribute('disabled'):
+                continue
+            driver.execute_script("window.scrollBy(0,500);")
+            button.click()
+            sleep(2)
+            driver.find_element_by_class_name('button-primary-large').click()
+            invitations_sent += 1
             sleep(1)
-            connections(con_filter)
-        except:
-            connections(con_filter)
-    else:
-        return
-
-
-def remove_con(url: str):
-    driver.get(url)
-    driver.find_element_by_css_selector('button[aria-label="More actions"]').click()
-    driver.find_element_by_class_name('pv-s-profile-actions--disconnect').click()
-    driver.find_element_by_class_name('pv-s-profile-actions--unfollow').click()
 
 
 if __name__ == '__main__':
     login("https://www.linkedin.com")
-    search_url = "https://www.linkedin.com/search/results/people/?facetGeoRegion=%5B%22in%3A0%22%5D&facetNetwork" \
-                 "=%5B%22F%22%5D&origin=FACETED_SEARCH"
+    search_url = "https://www.linkedin.com/search/results/people/?facetGeoRegion=%5B%22eg%3A0%22%2C%22ae%3A0%22%5D" \
+                 "&facetNetwork=%5B%22S%22%5D&origin=FACETED_SEARCH"
     connections(search_url)
+    pass
