@@ -25,10 +25,10 @@ def login(url: str):
     login_submit_btn.click()
 
 
-def connections(con_filter: str):
-    invitations_sent = 0
+def connections(con_filter: str, invitations_sent=0):
     driver.get(con_filter)
     if invitations_sent < 50:
+        current_view = 760
         driver.execute_script("window.scrollBy(0,250);")
         container = driver.find_element_by_class_name('blended-srp-results-js')
         buttons = container.find_elements_by_class_name('search-result__actions--primary')
@@ -41,6 +41,8 @@ def connections(con_filter: str):
             driver.find_element_by_class_name('button-primary-large').click()
             invitations_sent += 1
             sleep(1)
+        driver.find_element_by_class_name('next').click()
+        connections(con_filter, invitations_sent)
 
 
 if __name__ == '__main__':
