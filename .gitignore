@@ -115,7 +115,7 @@ dmypy.json
 .pyre/
 
 cookies.pkl
-video/
+assets/
 # IDEs
 .vscode/
 .idea/
